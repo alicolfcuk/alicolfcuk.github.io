@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#061522">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ali Çolak, Architecture Portfolio</title>
+<meta name="description" content="Architecture portfolio of Ali Çolak, Istanbul Technical University.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Geist+Mono:wght@400..700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#061522;        /* page ground, changes per project */
+  --marker:#C7BFAE;       /* accent, changes per project */
+  --ink:#E9E4D6;          /* chalk text */
+  --graphite:color-mix(in srgb,var(--ink) 58%,var(--paper));
+  --line:color-mix(in srgb,var(--ink) 16%,var(--paper));
+  --sheet:color-mix(in srgb,var(--ink) 6%,var(--paper));
+  --gutter:max(clamp(24px,6vw,112px),calc((100vw - 1480px) / 2)); /* side margin; content never wider than 1480px */
+  --header:76px;
+  --font:"Chakra Petch",system-ui,sans-serif;
+  --mono:"Geist Mono",ui-monospace,monospace;
+  --pixel:"Geist Mono",ui-monospace,monospace;
+}
+@property --paper{syntax:'<color>';inherits:true;initial-value:#061522}
+@property --marker{syntax:'<color>';inherits:true;initial-value:#C7BFAE}
+html{transition:--paper .9s ease,--marker .9s ease}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{cursor:var(--cur-arrow,default);background:var(--paper);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%;height:auto}
+a{color:inherit}
+::selection{background:var(--marker);color:var(--paper)}
+:focus-visible{outline:2px solid var(--marker);outline-offset:3px}
+
+/* header + progress */
+.top{position:fixed;inset:0 0 auto 0;z-index:20;display:flex;justify-content:space-between;align-items:center;
+  height:var(--header);padding:0 var(--gutter);background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top a{text-decoration:none}
+.top .name{display:flex;align-items:center;gap:10px;color:var(--ink);font-weight:600;font-size:17px;letter-spacing:-.01em}
+.top .name i{width:8px;height:8px;background:var(--marker);box-shadow:3px 3px 0 color-mix(in srgb,var(--marker) 35%,transparent)}
+.top nav{display:flex;gap:clamp(24px,3vw,48px);font-size:16px}
+.top nav a{color:var(--graphite);padding:4px 8px;margin:-4px -8px;transition:color .15s,background-color .15s}
+.top nav a:hover{color:var(--ink)}
+.progress{position:fixed;left:0;right:0;top:0;height:4px;z-index:25}
+.progress span{display:block;height:100%;width:0;background:var(--marker);
+  /* stepped edge so the bar grows in pixel blocks */
+  mask:repeating-linear-gradient(90deg,#000 0 8px,transparent 8px 10px)}
+
+/* hero */
+.hero{position:relative;height:100svh;min-height:560px;overflow:hidden;border-bottom:1px solid var(--line);padding:0}
+#field{position:absolute;inset:0;width:100%;height:100%;touch-action:pan-y;cursor:none;image-rendering:pixelated}
+.hero-text{position:absolute;left:50%;top:calc(50% + var(--header) / 2);transform:translate(-50%,-50%);width:calc(100% - 2 * var(--gutter));max-width:640px;text-align:center;pointer-events:none}
+.hero h1 svg{display:block;margin:0 auto;width:clamp(260px,40vw,540px);height:auto}
+.hero p{margin:clamp(20px,3vh,32px) auto 0;max-width:36ch;font-size:clamp(17px,1.6vw,21px);color:var(--graphite)}
+.hint{font-family:var(--mono);position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;bottom:clamp(28px,6vh,56px);font-size:13px;color:var(--graphite);pointer-events:none}
+
+section{padding:clamp(112px,16vh,200px) var(--gutter);scroll-margin-top:var(--header)}
+h2{font-family:var(--pixel);font-size:clamp(30px,3.8vw,52px);font-weight:600;letter-spacing:-.03em;line-height:1}
+
+/* index */
+.index-head{display:flex;justify-content:space-between;align-items:end;gap:32px;margin-bottom:clamp(40px,5vw,64px)}
+.index-head p{color:var(--graphite);max-width:40ch}
+.index{list-style:none;border-top:1px solid var(--ink)}
+.index.folded li:nth-child(n+4){display:none}
+.index a{position:relative;display:grid;grid-template-columns:9.5rem 1fr auto;gap:24px;align-items:baseline;padding:26px 12px;
+  border-bottom:1px solid var(--line);text-decoration:none;transition:padding .2s steps(3),color .15s,background-color .15s}
+.index .term{font-family:var(--mono);color:var(--graphite);font-size:14px}
+.index .title{font-size:clamp(20px,2.4vw,30px);font-weight:600;font-stretch:105%;letter-spacing:-.01em}
+.index .kind{color:var(--graphite);font-size:15px;text-align:right}
+.index a:hover,.index a:focus-visible{padding-left:28px;padding-right:28px;background:var(--c);color:var(--paper);outline:none}
+.index a:hover .term,.index a:hover .kind,.index a:focus-visible .term,.index a:focus-visible .kind{color:inherit}
+
+/* projects */
+.project{border-top:1px solid var(--line)}
+.p-head{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,6vw,112px);margin-bottom:clamp(56px,7vw,112px)}
+.p-head .term{font-family:var(--mono);color:var(--marker);font-size:14px}
+.p-head h3{font-size:clamp(34px,5vw,72px);line-height:1.02;font-weight:700;font-stretch:112%;letter-spacing:-.025em;margin-top:18px}
+.p-info dl{display:grid;grid-template-columns:5.5rem 1fr;gap:10px 16px;font-size:15px;padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:24px}
+.p-info dt{color:var(--graphite)}
+.p-info p{max-width:52ch}
+.p-info p+p{margin-top:16px}
+
+/* plates read like sheets pinned on the board */
+.plates{display:grid;grid-template-columns:repeat(12,1fr);gap:clamp(40px,4vw,64px) clamp(16px,2.4vw,40px);align-items:start}
+.plates figure{grid-column:span 12;position:relative}
+.plates .half{grid-column:span 6}
+.plates .third{grid-column:span 4}
+.plates .twothird{grid-column:span 8}
+.plates .quarter{grid-column:span 3}
+.plates img{width:100%;background:#fff;box-shadow:0 0 0 1px var(--line);transition:box-shadow .15s steps(2),transform .15s steps(2)}
+.plates figure:hover img{box-shadow:6px 6px 0 var(--marker);transform:translate(-3px,-3px)}
+.plates .spread{display:grid;grid-template-columns:1fr 1fr}
+.plates .spread figcaption{grid-column:1/-1}
+.plates .spread img{box-shadow:none}
+.plates .spread:hover img{box-shadow:none;transform:none}
+.plates .spread:hover{outline:none}
+.plates figcaption{font-size:14px;color:var(--graphite);padding-top:14px}
+
+/* about */
+.about{display:grid;grid-template-columns:1fr 1.4fr;gap:clamp(32px,6vw,112px);border-top:1px solid var(--ink)}
+.about p{font-size:clamp(18px,1.7vw,22px);max-width:40ch}
+.about p+p{margin-top:16px}
+.facts{display:grid;grid-template-columns:7rem 1fr;gap:8px 16px;margin-top:32px;font-size:15px}
+.facts dt{color:var(--graphite)}
+.contact{display:flex;flex-wrap:wrap;gap:14px;margin-top:36px}
+.btn{display:inline-block;padding:14px 24px;line-height:1.2;border:2px solid var(--ink);text-decoration:none;font-weight:600;box-shadow:4px 4px 0 var(--marker);transition:transform .12s steps(2),box-shadow .12s steps(2)}
+.btn:hover,.btn:focus-visible{transform:translate(4px,4px);box-shadow:0 0 0 var(--marker)}
+.foot{background:#E9E4D6;color:#081B2C;padding:clamp(48px,8vh,88px) var(--gutter) 28px;font-size:15px}
+.foot-top{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:32px;padding-bottom:clamp(40px,7vh,72px)}
+.foot-top div{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.foot-name{display:flex;align-items:center;gap:12px;font-weight:600;font-size:24px;letter-spacing:-.01em;line-height:1;margin-bottom:10px}
+.foot-top .foot-name{color:#081B2C}
+.foot-name i{width:10px;height:10px;background:#081B2C;box-shadow:3px 3px 0 #C7BFAE}
+.foot-top p{color:#3C5A73;max-width:32ch}
+.foot a{color:#081B2C;text-decoration:none;border-bottom:2px solid #C7BFAE;padding:4px 8px;margin-left:-8px}
+.foot a{transition:background-color .12s,color .12s}
+.foot a:hover,.foot a:focus-visible{background:#081B2C;color:#E9E4D6;border-bottom-color:#081B2C}
+.foot-bottom{display:flex;justify-content:space-between;border-top:2px solid #081B2C;padding-top:16px;font-family:var(--mono);font-size:12px;color:#3C5A73}
+@media (max-width:820px){.foot-top{grid-template-columns:1fr}}
+
+/* lightbox */
+#lb{position:fixed;inset:0;z-index:50;background:color-mix(in srgb,#02070B 80%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:88px 4vw 4vh}
+#lb::before{content:"";position:absolute;inset:0 0 auto 0;height:160px;background:linear-gradient(rgba(0,0,0,.75),transparent);opacity:.45;transition:opacity .25s;pointer-events:none}
+#lb:has(.lb-close:hover)::before,#lb:has(.lb-close:focus-visible)::before{opacity:1}
+#lb.on{display:flex}
+#lb img{position:relative;max-height:calc(100dvh - 88px - 4vh);max-width:calc(100vw - 2 * var(--gutter) - 150px);will-change:transform,opacity;width:auto;background:#fff;box-shadow:8px 8px 0 var(--marker)}
+#lb .lb-close{position:absolute;z-index:1;top:24px;right:var(--gutter);font:600 15px var(--font);background:#061522;border:2px solid var(--ink);padding:10px 18px;cursor:inherit;color:var(--ink);box-shadow:4px 4px 0 var(--marker);transition:transform .12s steps(2),box-shadow .12s steps(2)}
+#lb .lb-close:hover,#lb .lb-close:focus-visible{transform:translate(4px,4px);box-shadow:0 0 0 var(--marker)}
+
+@media (max-width:820px){
+  :root{--header:64px}
+  section{padding-top:88px;padding-bottom:88px}
+  .top nav{gap:16px;font-size:14px}
+  .hint{display:none}
+  .index a{grid-template-columns:1fr;gap:2px}
+  .index .kind{text-align:left}
+  .p-head,.about{grid-template-columns:1fr}
+  .plates .half,.plates .third,.plates .twothird{grid-column:span 12}
+  .plates .quarter{grid-column:span 6}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;transition:none}
+  *{transition:none!important}
+}
+
+/* pixel cursor: arrow everywhere, pixel hand on anything clickable */
+a,button,.plates img,#lb,#lb img{cursor:var(--cur-hand,pointer)}
+.contact-block{margin-top:48px;padding-top:28px;border-top:1px solid var(--line)}
+.contact-block h3{font-family:var(--pixel);font-weight:600;font-size:24px;letter-spacing:-.02em;color:var(--marker)}
+.contact-block .facts{margin-top:16px}
+.contact-block .facts a{text-decoration:none;border-bottom:2px solid var(--marker)}
+
+
+/* ===== Header pop-ups + colour wipe between places ===== */
+.top nav a[aria-expanded="true"]{color:var(--paper);background:var(--ink)}
+#pop{position:fixed;z-index:30;top:calc(var(--header) + 6px);right:var(--gutter);width:min(440px,calc(100vw - 32px));max-height:calc(100dvh - var(--header) - 24px);overflow:auto;overscroll-behavior:contain;
+  border:2px solid;padding:22px 24px 24px;opacity:0;visibility:hidden;transform:translate(6px,6px);box-shadow:0 0 0 #3C5A73;will-change:transform,opacity;
+  transition:opacity .14s ease,transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s cubic-bezier(.2,.8,.2,1),visibility 0s .22s}
+#pop.on{opacity:1;visibility:visible;transform:none;box-shadow:6px 6px 0 #3C5A73;transition-delay:0s}
+#pop h2{font-size:22px;color:var(--marker);margin-bottom:14px}
+#pop p{font-size:16px;max-width:none}
+#pop p+p{margin-top:10px}
+#pop .facts{margin-top:16px;font-size:15px}
+#pop .contact{margin-top:20px;gap:10px}
+#pop .btn{padding:11px 18px;font-size:15px}
+#pop ul{list-style:none}
+#pop li a{display:grid;grid-template-columns:7.2rem 1fr;gap:12px;align-items:baseline;padding:9px 10px;margin:0 -10px;border-top:1px solid var(--line);text-decoration:none;color:var(--ink);transition:background-color .12s}
+#pop li a .term{font-family:var(--mono);font-size:12px;color:var(--graphite)}
+#pop li a .title{font-weight:600}
+#wipe{position:fixed;inset:0;z-index:60;background:var(--w,var(--marker));transform:scaleY(0);pointer-events:none;will-change:transform}
+@media (max-width:820px){#pop{right:16px;left:16px;width:auto}#pop li a{grid-template-columns:1fr;gap:0}}
+@media (prefers-reduced-motion:reduce){#pop,#pop.on{transition:none;transform:none}}
+.about[hidden]{display:none}
+/* pop-ups use the light side of the palette */
+#pop{--ink:#081B2C;--paper:#E9E4D6;--graphite:#3C5A73;--line:#C7BFAE;--sheet:#E9E4D6;background:#E9E4D6;color:#081B2C;border-color:#081B2C}
+#pop h2{color:#3C5A73}
+#pop .btn{box-shadow:4px 4px 0 #3C5A73}
+#pop .btn:hover,#pop .btn:focus-visible{box-shadow:0 0 0 #3C5A73}
+#pop .facts a{border-bottom-color:#3C5A73}
+#pop li a:hover,#pop li a:focus-visible{background:var(--c);color:#081B2C;outline:none}
+#pop li a:hover .term,#pop li a:focus-visible .term{color:#081B2C}
+#pop .facts a{padding:2px 6px;margin-left:-6px;transition:background-color .12s,color .12s}
+#pop .facts a:hover,#pop .facts a:focus-visible{background:#081B2C;color:#E9E4D6;border-bottom-color:#081B2C}
+.more{margin-top:40px;background:none;color:var(--ink);font:600 16px var(--font);cursor:inherit}
+.more::after{content:"";display:inline-block;width:7px;height:7px;margin-left:14px;border-right:2px solid;border-bottom:2px solid;transform:translateY(-3px) rotate(45deg)}
+/* label swap: the old line slides up and out, the new one rises from below */
+.more-t{display:inline-grid;overflow:hidden;vertical-align:bottom}
+.more-t span{grid-area:1/1;transition:transform .38s cubic-bezier(.2,.8,.2,1),opacity .38s}
+.more-t span+span{transform:translateY(110%);opacity:0}
+.more[aria-expanded="true"] .more-t span:first-child{transform:translateY(-110%);opacity:0}
+.more[aria-expanded="true"] .more-t span+span{transform:none;opacity:1}
+.more::after{transition:transform .38s cubic-bezier(.2,.8,.2,1)}
+.more[aria-expanded="true"]::after{transform:translateY(1px) rotate(-135deg)}
+.hero .kicker{margin-top:clamp(16px,2.4vh,24px);font-family:var(--mono);font-size:14px;letter-spacing:.02em;color:var(--marker)}
+.hero .kicker+p{margin-top:12px}
+/* lightbox: step through the plates of the same project */
+#lb .lb-nav{position:absolute;z-index:1;top:50%;width:52px;height:52px;margin-top:-26px;background:#061522;border:2px solid var(--ink);color:var(--ink);box-shadow:4px 4px 0 var(--marker);cursor:inherit;transition:transform .12s steps(2),box-shadow .12s steps(2)}
+#lb .prev{left:var(--gutter)}
+#lb .next{right:var(--gutter)}
+#lb .lb-nav::before{content:"";position:absolute;left:50%;top:50%;width:10px;height:10px;border-right:2px solid;border-bottom:2px solid}
+#lb .prev::before{transform:translate(-30%,-50%) rotate(135deg)}
+#lb .next::before{transform:translate(-70%,-50%) rotate(-45deg)}
+#lb .lb-nav:hover,#lb .lb-nav:focus-visible{transform:translate(4px,4px);box-shadow:0 0 0 var(--marker)}
+#lb .lb-count{position:absolute;z-index:1;top:36px;left:var(--gutter);font-family:var(--mono);font-size:13px;color:var(--ink)}
+#lb.single .lb-nav,#lb.single .lb-count{display:none}
+#lb{touch-action:pan-y}
+@media (max-width:820px){
+  #lb{padding-bottom:96px}
+  #lb img{max-width:92vw;max-height:calc(100dvh - 88px - 96px)}
+  #lb .lb-nav{top:auto;bottom:24px;margin:0}
+}
+/* one project at a time, then a way out to the others */
+.project[hidden]{display:none}
+.others{padding:clamp(80px,12vh,140px) var(--gutter);border-top:1px solid var(--line)}
+.others h2{margin-bottom:clamp(28px,4vw,48px)}
+.others .btn{margin-top:40px}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="name" href="#" aria-label="Ali Çolak, back to top"><i aria-hidden="true"></i>Ali Çolak</a>
+  <nav><a href="#work">Work</a><a href="#about">About</a><a href="#contact">Contact</a></nav>
+</header>
+<div class="progress" aria-hidden="true"><span></span></div>
+<div id="pop" role="dialog" aria-label="Menu" tabindex="-1"></div>
+<div id="wipe" aria-hidden="true"></div>
+
+<main>
+<section class="hero" aria-label="Introduction" data-bg="#061522" data-accent="#C7BFAE">
+  <canvas id="field" aria-hidden="true"></canvas>
+  <div class="hero-text">
+    <h1 aria-label="Ali Çolak, Architecture Portfolio"><svg viewBox="0 0 67 14" aria-hidden="true" shape-rendering="crispEdges"><path fill="currentColor" d="M1 0h5v1h-5zM0 1h1v1h-1zM6 1h1v1h-1zM0 2h1v1h-1zM6 2h1v1h-1zM0 3h1v1h-1zM6 3h1v1h-1zM0 4h1v1h-1zM6 4h1v1h-1zM0 5h7v1h-7zM0 6h1v1h-1zM6 6h1v1h-1zM0 7h1v1h-1zM6 7h1v1h-1zM0 8h1v1h-1zM6 8h1v1h-1zM0 9h1v1h-1zM6 9h1v1h-1zM0 10h1v1h-1zM6 10h1v1h-1zM9 0h1v1h-1zM9 1h1v1h-1zM9 2h1v1h-1zM9 3h1v1h-1zM9 4h1v1h-1zM9 5h1v1h-1zM9 6h1v1h-1zM9 7h1v1h-1zM9 8h1v1h-1zM9 9h1v1h-1zM9 10h6v1h-6zM17 0h3v1h-3zM18 1h1v1h-1zM18 2h1v1h-1zM18 3h1v1h-1zM18 4h1v1h-1zM18 5h1v1h-1zM18 6h1v1h-1zM18 7h1v1h-1zM18 8h1v1h-1zM18 9h1v1h-1zM17 10h3v1h-3zM26 0h5v1h-5zM25 1h1v1h-1zM31 1h1v1h-1zM25 2h1v1h-1zM25 3h1v1h-1zM25 4h1v1h-1zM25 5h1v1h-1zM25 6h1v1h-1zM25 7h1v1h-1zM25 8h1v1h-1zM25 9h1v1h-1zM31 9h1v1h-1zM26 10h5v1h-5zM28 11h1v1h-1zM29 12h1v1h-1zM27 13h2v1h-2zM35 0h5v1h-5zM34 1h1v1h-1zM40 1h1v1h-1zM34 2h1v1h-1zM40 2h1v1h-1zM34 3h1v1h-1zM40 3h1v1h-1zM34 4h1v1h-1zM40 4h1v1h-1zM34 5h1v1h-1zM40 5h1v1h-1zM34 6h1v1h-1zM40 6h1v1h-1zM34 7h1v1h-1zM40 7h1v1h-1zM34 8h1v1h-1zM40 8h1v1h-1zM34 9h1v1h-1zM40 9h1v1h-1zM35 10h5v1h-5zM43 0h1v1h-1zM43 1h1v1h-1zM43 2h1v1h-1zM43 3h1v1h-1zM43 4h1v1h-1zM43 5h1v1h-1zM43 6h1v1h-1zM43 7h1v1h-1zM43 8h1v1h-1zM43 9h1v1h-1zM43 10h6v1h-6zM52 0h5v1h-5zM51 1h1v1h-1zM57 1h1v1h-1zM51 2h1v1h-1zM57 2h1v1h-1zM51 3h1v1h-1zM57 3h1v1h-1zM51 4h1v1h-1zM57 4h1v1h-1zM51 5h7v1h-7zM51 6h1v1h-1zM57 6h1v1h-1zM51 7h1v1h-1zM57 7h1v1h-1zM51 8h1v1h-1zM57 8h1v1h-1zM51 9h1v1h-1zM57 9h1v1h-1zM51 10h1v1h-1zM57 10h1v1h-1zM60 0h1v1h-1zM66 0h1v1h-1zM60 1h1v1h-1zM65 1h1v1h-1zM60 2h1v1h-1zM64 2h1v1h-1zM60 3h1v1h-1zM63 3h1v1h-1zM60 4h1v1h-1zM62 4h1v1h-1zM60 5h2v1h-2zM60 6h1v1h-1zM62 6h1v1h-1zM60 7h1v1h-1zM63 7h1v1h-1zM60 8h1v1h-1zM64 8h1v1h-1zM60 9h1v1h-1zM65 9h1v1h-1zM60 10h1v1h-1zM66 10h1v1h-1z"/></svg></h1>
+    <p class="kicker">Architecture Portfolio, 2023–2026</p>
+    <p>Architecture student at Istanbul Technical University, working between the city, the model table and the drawing.</p>
+  </div>
+  <div class="hint">Move across the sheet</div>
+</section>
+
+<section id="work" class="work" data-bg="#0C2134" data-accent="#C7BFAE">
+  <div class="index-head">
+    <h2>Work 2023–2026</h2>
+    <p>Studio projects, an internship and coursework, newest first. Each project brings its own colour.</p>
+  </div>
+  <ul class="index folded">
+    <li><a href="#lisnave" style="--c:#E2463A"><span class="term">2026–27 Fall</span><span class="title">Old Lisnave, Almada</span><span class="kind">Studio, in progress</span></a></li>
+    <li><a href="#survey" style="--c:#A9C1D6"><span class="term">2026–27 Fall</span><span class="title">Measured Survey, Cedid Ali Paşa</span><span class="kind">Survey and restoration</span></a></li>
+    <li><a href="#notperfect" style="--c:#D9A45C"><span class="term">Summer 2026</span><span class="title">Not-Perfect, Kurtuluş</span><span class="kind">Internship, Base Architect</span></a></li>
+    <li><a href="#hotel" style="--c:#E0708C"><span class="term">2025–26 Spring</span><span class="title">Boutique Hotel, Kılıçalipaşa</span><span class="kind">Studio</span></a></li>
+    <li><a href="#uncanny" style="--c:#D99A8E"><span class="term">2025–26 Fall</span><span class="title">The Uncanny</span><span class="kind">Studio</span></a></li>
+    <li><a href="#karasurlari" style="--c:#B4CB8C"><span class="term">2024–25 Spring</span><span class="title">Karasurları Healing Centre</span><span class="kind">Studio</span></a></li>
+    <li><a href="#model" style="--c:#F0A443"><span class="term">2024–25 Spring</span><span class="title">1:20 Section Model</span><span class="kind">Building Elements Design</span></a></li>
+    <li><a href="#atlas" style="--c:#74CEC6"><span class="term">2024–25 Fall</span><span class="title">Atlas, Cibali</span><span class="kind">Studio</span></a></li>
+    <li><a href="#bio" style="--c:#D2AE7E"><span class="term">2023–24 Spring</span><span class="title">Biomaterial Studies</span><span class="kind">Studio</span></a></li>
+  </ul>
+  <button type="button" class="btn more" aria-expanded="false" aria-controls="projects" aria-label="Show all projects"><span class="more-t" aria-hidden="true"><span>Show all projects</span><span>Hide projects</span></span></button>
+</section>
+
+<div id="projects" hidden>
+<section class="project" id="lisnave" data-bg="#141011" data-accent="#E2463A">
+  <header class="p-head">
+    <div><div class="term">2026–27 Fall</div><h3>Old Lisnave, Almada</h3></div>
+    <div class="p-info"><dl><dt>Course</dt><dd>Architectural Design Studio</dd><dt>Site</dt><dd>Lisnave shipyard, Almada, Lisbon</dd><dt>Status</dt><dd>In progress</dd></dl><p>A mapping study of the abandoned Lisnave shipyard on the Tagus. The drawings read what a century of shipbuilding put into the ground, the water and the city across the river.</p><p>Carnation and Shipyard follows the yard from the 1974 revolution to its closure; Fractal Lisnave turns the site into a field guide of objects.</p></div>
+  </header>
+  <div class="plates">
+    <figure class="full"><img src="plates/p006-004.jpg" alt="Carnation and Shipyard, A3 1/3" loading="lazy"><figcaption>Carnation and Shipyard, A3 1/3</figcaption></figure>
+    <figure class="full"><img src="plates/p007-006.jpg" alt="Carnation and Shipyard, A3 2/3" loading="lazy"><figcaption>Carnation and Shipyard, A3 2/3</figcaption></figure>
+    <figure class="spread" data-full="plates/p010-012.jpg"><img src="plates/p010-012.jpg" alt="Fractal Lisnave, spread" loading="lazy"><img src="plates/p011-014.jpg" alt="Fractal Lisnave, spread" loading="lazy"><figcaption>Fractal Lisnave, spread</figcaption></figure>
+    <figure class="half"><img src="plates/p008-008.jpg" alt="The ground as archive" loading="lazy"><figcaption>The ground as archive</figcaption></figure>
+    <figure class="half"><img src="plates/p009-010.jpg" alt="Sections at equal intervals, Lisnave and the Golden Horn" loading="lazy"><figcaption>Sections at equal intervals, Lisnave and the Golden Horn</figcaption></figure>
+    <figure class="third"><img src="plates/p005-002.jpg" alt="Old Lisnave, process collage" loading="lazy"><figcaption>Old Lisnave, process collage</figcaption></figure>
+    <figure class="twothird"><img src="plates/p012-016.jpg" alt="Fractal Lisnave, field guide" loading="lazy"><figcaption>Fractal Lisnave, field guide</figcaption></figure>
+  </div>
+</section>
+<section class="project" id="survey" data-bg="#14181C" data-accent="#A9C1D6">
+  <header class="p-head">
+    <div><div class="term">2026–27 Fall</div><h3>Measured Survey, Cedid Ali Paşa</h3></div>
+    <div class="p-info"><dl><dt>Course</dt><dd>Survey and Restoration</dd><dt>Building</dt><dd>Cedid Ali Paşa Mescidi, Istanbul</dd><dt>Status</dt><dd>In progress</dd></dl><p>A measured survey of a small Ottoman mosque, drawn up from site measurements into CAD plans and elevations, with a research board on the building&#x27;s history.</p></div>
+  </header>
+  <div class="plates">
+    <figure class="full"><img src="plates/p013-018.jpg" alt="Cedid Ali Paşa, research board" loading="lazy"><figcaption>Cedid Ali Paşa, research board</figcaption></figure>
+    <figure class="half"><img src="plates/p014-020.jpg" alt="Measured plan" loading="lazy"><figcaption>Measured plan</figcaption></figure>
+    <figure class="half"><img src="plates/p014-022.jpg" alt="Measured elevation" loading="lazy"><figcaption>Measured elevation</figcaption></figure>
+  </div>
+</section>
+<section class="project" id="notperfect" data-bg="#0F1914" data-accent="#D9A45C">
+  <header class="p-head">
+    <div><div class="term">Summer 2026</div><h3>Not-Perfect, Kurtuluş</h3></div>
+    <div class="p-info"><dl><dt>Office</dt><dd>Base Architect</dd><dt>Program</dt><dd>Bar and lounge</dd><dt>Tools</dt><dd>SketchUp, D5 Render, AI for the street</dd></dl><p>A neighbourhood bar on a Kurtuluş corner, designed during my internship. I modelled the interior and the façade and produced the presentation renders, using AI to build up the street around it.</p></div>
+  </header>
+  <div class="plates">
+    <figure class="full"><img src="plates/p016-024.jpg" alt="Street façade" loading="lazy"><figcaption>Street façade</figcaption></figure>
+    <figure class="half"><img src="plates/p017-026.jpg" alt="Front bar from the street" loading="lazy"><figcaption>Front bar from the street</figcaption></figure>
+    <figure class="half"><img src="plates/p018-028.jpg" alt="Front bar and seating" loading="lazy"><figcaption>Front bar and seating</figcaption></figure>
+    <figure class="half"><img src="plates/p018-030.jpg" alt="Window seating" loading="lazy"><figcaption>Window seating</figcaption></figure>
+    <figure class="half"><img src="plates/p018-032.jpg" alt="Bar counter" loading="lazy"><figcaption>Bar counter</figcaption></figure>
+    <figure class="half"><img src="plates/p019-036.jpg" alt="Mezzanine stair" loading="lazy"><figcaption>Mezzanine stair</figcaption></figure>
+    <figure class="half"><img src="plates/p020-038.jpg" alt="Back bar" loading="lazy"><figcaption>Back bar</figcaption></figure>
+    <figure class="full"><img src="plates/p020-040.jpg" alt="Lounge" loading="lazy"><figcaption>Lounge</figcaption></figure>
+  </div>
+</section>
+<section class="project" id="hotel" data-bg="#14121E" data-accent="#E0708C">
+  <header class="p-head">
+    <div><div class="term">2025–26 Spring</div><h3>Boutique Hotel, Kılıçalipaşa</h3></div>
+    <div class="p-info"><dl><dt>Course</dt><dd>Architectural Design Studio</dd><dt>Site</dt><dd>Cihangir, Istanbul</dd><dt>Program</dt><dd>Boutique hotel</dd></dl><p>A small hotel inserted into the tight street fabric of Cihangir. The site analysis was drawn as dark AutoCAD sheets; the building was then worked out in plans, sections and street elevations.</p></div>
+  </header>
+  <div class="plates">
+    <figure class="half"><img src="plates/p022-042.jpg" alt="Cihangir site analysis, AutoCAD sheet" loading="lazy"><figcaption>Cihangir site analysis, AutoCAD sheet</figcaption></figure>
+    <figure class="half"><img src="plates/p023-044.jpg" alt="Cihangir site analysis, AutoCAD sheet" loading="lazy"><figcaption>Cihangir site analysis, AutoCAD sheet</figcaption></figure>
+    <figure class="half"><img src="plates/p024-046.jpg" alt="Site analysis" loading="lazy"><figcaption>Site analysis</figcaption></figure>
+    <figure class="half"><img src="plates/p024-048.jpg" alt="Figure-ground studies" loading="lazy"><figcaption>Figure-ground studies</figcaption></figure>
+    <figure class="third"><img src="plates/p025-050.jpg" alt="Ground floor" loading="lazy"><figcaption>Ground floor</figcaption></figure>
+    <figure class="third"><img src="plates/p025-052.jpg" alt="Plans and section" loading="lazy"><figcaption>Plans and section</figcaption></figure>
+    <figure class="third"><img src="plates/p026-054.jpg" alt="Plans and section" loading="lazy"><figcaption>Plans and section</figcaption></figure>
+    <figure class="full"><img src="plates/p026-056.jpg" alt="Street elevations" loading="lazy"><figcaption>Street elevations</figcaption></figure>
+  </div>
+</section>
+<section class="project" id="uncanny" data-bg="#1B1416" data-accent="#D99A8E">
+  <header class="p-head">
+    <div><div class="term">2025–26 Fall</div><h3>The Uncanny</h3></div>
+    <div class="p-info"><dl><dt>Course</dt><dd>Architectural Design Studio</dd><dt>Method</dt><dd>Layered urban analysis</dd></dl><p>An attempt to find, map and finally design for the feeling of uncanniness: the familiar city made slightly strange.</p></div>
+  </header>
+  <div class="plates">
+    <figure class="third"><img src="plates/p028-058.jpg" alt="Concept sheet" loading="lazy"><figcaption>Concept sheet</figcaption></figure>
+    <figure class="twothird"><img src="plates/p029-060.jpg" alt="Layered urban analysis" loading="lazy"><figcaption>Layered urban analysis</figcaption></figure>
+    <figure class="half"><img src="plates/p030-062.jpg" alt="Mapping and sections" loading="lazy"><figcaption>Mapping and sections</figcaption></figure>
+    <figure class="half"><img src="plates/p031-064.jpg" alt="Analysis of a single block" loading="lazy"><figcaption>Analysis of a single block</figcaption></figure>
+  </div>
+</section>
+<section class="project" id="karasurlari" data-bg="#131A14" data-accent="#B4CB8C">
+  <header class="p-head">
+    <div><div class="term">2024–25 Spring</div><h3>Karasurları Healing Centre</h3></div>
+    <div class="p-info"><dl><dt>Course</dt><dd>Architectural Design Studio IV</dd><dt>Site</dt><dd>Bostans along the land walls, Istanbul</dd><dt>Sheets</dt><dd>2 × A1 and process book</dd></dl><p>A healing centre in the market gardens beside the Theodosian walls, with plant care, nature walks and group therapy.</p><p>A modular timber frame and rainwater harvesting let the units sit lightly between the wall and the gardens.</p></div>
+  </header>
+  <div class="plates">
+    <figure class="half"><img src="plates/p034-068.jpg" alt="Final sheet, A1" loading="lazy"><figcaption>Final sheet, A1</figcaption></figure>
+    <figure class="half"><img src="plates/p034-070.jpg" alt="Final sheet, A1" loading="lazy"><figcaption>Final sheet, A1</figcaption></figure>
+    <figure class="full"><img src="plates/p033-066.jpg" alt="Process" loading="lazy"><figcaption>Process</figcaption></figure>
+    <figure class="full"><img src="plates/p035-072.jpg" alt="Istanbul land walls collage" loading="lazy"><figcaption>Istanbul land walls collage</figcaption></figure>
+    <figure class="half"><img src="plates/p036-074.jpg" alt="Storyboard: the legacy of the Marble Emperor" loading="lazy"><figcaption>Storyboard: the legacy of the Marble Emperor</figcaption></figure>
+    <figure class="half"><img src="plates/p037-076.jpg" alt="Plan, section, axonometric model" loading="lazy"><figcaption>Plan, section, axonometric model</figcaption></figure>
+  </div>
+</section>
+<section class="project" id="model" data-bg="#111722" data-accent="#F0A443">
+  <header class="p-head">
+    <div><div class="term">2024–25 Spring</div><h3>1:20 Section Model</h3></div>
+    <div class="p-info"><dl><dt>Course</dt><dd>Building Elements Design</dd><dt>Model</dt><dd>Cardboard, foam board, acetate, cork</dd></dl><p>A cut-away model of a narrow three-storey house, built to study how a building is put together, from the slabs and wall layers to the timber façade and the gravel roof.</p></div>
+  </header>
+  <div class="plates">
+    <figure class="half"><img src="img/yet-hero.jpg" alt="Full model" loading="lazy"><figcaption>Full model</figcaption></figure>
+    <figure class="quarter"><img src="img/yet-1.jpg" alt="Slab and window" loading="lazy"><figcaption>Slab and window</figcaption></figure>
+    <figure class="quarter"><img src="img/yet-2.jpg" alt="Roof build-up" loading="lazy"><figcaption>Roof build-up</figcaption></figure>
+  </div>
+</section>
+<section class="project" id="atlas" data-bg="#0E1B1D" data-accent="#74CEC6">
+  <header class="p-head">
+    <div><div class="term">2024–25 Fall</div><h3>Atlas, Cibali</h3></div>
+    <div class="p-info"><dl><dt>Course</dt><dd>Architectural Design Studio III</dd><dt>Site</dt><dd>Golden Horn waterfront, Cibali</dd><dt>Program</dt><dd>Study centre</dd></dl><p>A study centre that separates quiet and noisy use: a cafeteria, library and group areas on the ground floor, group rooms and a digital library above.</p></div>
+  </header>
+  <div class="plates">
+    <figure class="third"><img src="plates/p039-078.jpg" alt="Atlas" loading="lazy"><figcaption>Atlas</figcaption></figure>
+    <figure class="third"><img src="plates/p040-080.jpg" alt="Diagrams" loading="lazy"><figcaption>Diagrams</figcaption></figure>
+    <figure class="third"><img src="plates/p040-082.jpg" alt="Elevations and sections" loading="lazy"><figcaption>Elevations and sections</figcaption></figure>
+  </div>
+</section>
+<section class="project" id="bio" data-bg="#1B1611" data-accent="#D2AE7E">
+  <header class="p-head">
+    <div><div class="term">2023–24 Spring</div><h3>Biomaterial Studies</h3></div>
+    <div class="p-info"><dl><dt>Course</dt><dd>Architectural Design Studio II</dd><dt>Theme</dt><dd>Biomaterials and architecture</dd></dl><p>A test studio on combining biomaterials with architecture, worked through collage models and axonometric drawings.</p></div>
+  </header>
+  <div class="plates">
+    <figure class="third"><img src="plates/p042-084.jpg" alt="Portfolio sheet" loading="lazy"><figcaption>Portfolio sheet</figcaption></figure>
+    <figure class="third"><img src="plates/p042-086.jpg" alt="Material studies" loading="lazy"><figcaption>Material studies</figcaption></figure>
+    <figure class="third"><img src="plates/p043-088.jpg" alt="Collage models" loading="lazy"><figcaption>Collage models</figcaption></figure>
+    <figure class="third"><img src="plates/p043-090.jpg" alt="Collage models" loading="lazy"><figcaption>Collage models</figcaption></figure>
+    <figure class="third"><img src="plates/p043-092.jpg" alt="Collage models" loading="lazy"><figcaption>Collage models</figcaption></figure>
+  </div>
+</section>
+<nav class="others" aria-label="Other works">
+  <h2>See other works</h2>
+  <ul class="index others-list"></ul>
+  <a class="btn" href="#work">Back to all works</a>
+</nav>
+</div>
+
+<!-- Source for the About / Contact pop-ups; not shown on the page -->
+<section class="about" id="about" hidden>
+  <div><h2>About</h2></div>
+  <div>
+    <p>I study architecture at Istanbul Technical University. I like projects that start from a close reading of a place, whether a shipyard, a city wall or a single street corner.</p>
+    <p>I work across hand-built models, CAD drawing and rendering, and I have interned at Base Architect and at Yapı magazine.</p>
+    <dl class="facts">
+      <dt>Education</dt><dd>B.Arch, Istanbul Technical University, 2023–</dd>
+      <dt>Experience</dt><dd>Base Architect, Yapı Dergisi</dd>
+      <dt>Software</dt><dd>Rhino, Grasshopper, AutoCAD, Revit, ArchiCAD, SketchUp, D5 Render, Figma, Adobe</dd>
+      <dt>Languages</dt><dd>Turkish, English</dd>
+    </dl>
+    <div class="contact-block" id="contact">
+      <h3>Contact</h3>
+      <dl class="facts">
+        <dt>Email</dt><dd><a href="mailto:acolak22@itu.edu.tr">acolak22@itu.edu.tr</a></dd>
+        <dt>Phone</dt><dd><a href="tel:+905550484626">+90 555 048 46 26</a></dd>
+      </dl>
+      <div class="contact">
+        <a class="btn" href="mailto:acolak22@itu.edu.tr">Email me</a>
+        <a class="btn" href="tel:+905550484626">Call</a>
+        <a class="btn" href="Ali-Colak-Portfolio.pdf" download>Download portfolio (PDF)</a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+<footer class="foot">
+  <div class="foot-top">
+    <div><p class="foot-name"><i aria-hidden="true"></i>Ali Çolak</p><p>Architecture student at Istanbul Technical University.</p></div>
+    <div><a href="mailto:acolak22@itu.edu.tr">acolak22@itu.edu.tr</a><a href="tel:+905550484626">+90 555 048 46 26</a></div>
+    <div><a href="Ali-Colak-Portfolio.pdf" download>Portfolio (PDF)</a><a href="#">Back to top</a></div>
+  </div>
+  <div class="foot-bottom"><span>© 2026 Ali Çolak</span><span>Istanbul</span></div>
+</footer>
+
+<div id="lb" role="dialog" aria-modal="true" aria-label="Image viewer"><span class="lb-count" aria-live="polite"></span><button type="button" class="lb-close">Close</button><button type="button" class="lb-nav prev" aria-label="Previous image"></button><img alt=""><button type="button" class="lb-nav next" aria-label="Next image"></button></div>
+
+<script>
+/* ===== Hero: a sheet of drafting symbols that turn toward the cursor ===== */
+(() => {
+  const cv = document.getElementById('field'), ctx = cv.getContext('2d');
+  const INK = '#C7BFAE', LINE = '#3C5A73', MARK = '#E9E4D6';
+  const HUES = [...document.querySelectorAll('section.project')].map(p => p.dataset.accent);
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W, H, dpr, cells = [], mouse = {x: -9999, y: -9999, active: false}, t = 0;
+  const STEP = () => innerWidth < 700 ? 54 : 70;
+  // 9x9 pixel sprites of drafting symbols: north arrow, stair, door swing, column, tree
+  const SPR = [
+   ["....#....","...###...","..#####..",".###.###.","##..#..##","....#....","....#....","....#....","....#...."],
+   ["#########","#.......#","#######.#","#.....#.#","#####.#.#","#...#.#.#","###.#.#.#","#.#.#.#.#","#########"],
+   ["#........","#.##.....","#...#....","#....#...","#.....#..","#......#.","#......#.","#.......#","#########"],
+   [".........","..#####..",".#.....#.",".#.###.#.",".#.###.#.",".#.###.#.",".#.....#.","..#####..","........."],
+   ["...###...","..#####..",".#######.",".###.###.","..#####..","...###...","....#....","....#....","...###..."]
+  ].map(r => { const p = []; r.forEach((row, y) => [...row].forEach((ch, x) => ch === '#' && p.push([x - 4, y - 4]))); return p; });
+  function build() {
+    dpr = Math.min(devicePixelRatio || 1, 2);
+    W = cv.clientWidth; H = cv.clientHeight;
+    cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.imageSmoothingEnabled = false;
+    cells = []; const s = STEP();
+    for (let y = s * .8; y < H; y += s) for (let x = s * .6; x < W; x += s) {
+      const r = Math.random();
+      cells.push({x: Math.round(x), y: Math.round(y), kind: r < .5 ? 0 : r < .62 ? 1 : r < .74 ? 2 : r < .87 ? 3 : 4, q: 0, k: 0, hue: HUES[Math.floor(Math.random() * HUES.length)]});
+    }
+  }
+  // rotation snaps to 90 degree steps, like a real sprite
+  function sym(c, px) {
+    const pts = SPR[c.kind], q = c.q;
+    for (const [x, y] of pts) {
+      const rx = q === 0 ? x : q === 1 ? -y : q === 2 ? -x : y;
+      const ry = q === 0 ? y : q === 1 ? x : q === 2 ? -y : -x;
+      ctx.fillRect(Math.round(c.x + rx * px - px / 2), Math.round(c.y + ry * px - px / 2), Math.ceil(px), Math.ceil(px));
+    }
+  }
+  let hole = null;
+  const measureHole = () => { const r = document.querySelector('.hero-text').getBoundingClientRect(), c = cv.getBoundingClientRect(); hole = {l: r.left - c.left - 30, t: r.top - c.top - 30, r: r.right - c.left + 30, b: r.bottom - c.top + 20}; };
+  function frame() {
+    if (!hole) measureHole();
+    t += .006;
+    // with no pointer, a slow wandering "ghost" point keeps the sheet alive
+    const tx = mouse.active ? mouse.x : W * (.62 + .22 * Math.cos(t)), ty = mouse.active ? mouse.y : H * (.42 + .2 * Math.sin(t * 1.3));
+    ctx.clearRect(0, 0, W, H);
+    const reach = Math.max(W, H) * .32, s = STEP();
+    for (const c of cells) {
+      if (c.x > hole.l && c.x < hole.r && c.y > hole.t && c.y < hole.b) continue; // keep the name clear
+      const dx = tx - c.x, dy = ty - c.y, d = Math.hypot(dx, dy);
+      // only symbols near the pointer turn to face it; the rest rest facing north
+      const near = Math.max(0, 1 - d / reach);
+      c.k += (near - c.k) * (reduce ? 1 : .15);
+      if (c.k > .08) { const ang = Math.atan2(dy, dx) + Math.PI / 2; c.q = ((Math.round(ang / (Math.PI / 2)) % 4) + 4) % 4; } else c.q = 0;
+      const px = Math.max(1.5, s / 34 * (1 + 1.2 * c.k * c.k));
+      ctx.fillStyle = c.k > .42 ? c.hue : c.k > .18 ? INK : LINE;
+      ctx.globalAlpha = .55 + .45 * c.k;
+      sym(c, px);
+    }
+    // pixel cursor: a small block crosshair
+    if (mouse.active) {
+      const g = 4; ctx.fillStyle = MARK; ctx.globalAlpha = 1;
+      const cx = Math.round(tx / g) * g, cy = Math.round(ty / g) * g;
+      for (let i = -3; i <= 3; i++) if (i) { ctx.fillRect(cx + i * g * 2, cy, g, g); ctx.fillRect(cx, cy + i * g * 2, g, g); }
+    }
+    ctx.globalAlpha = 1;
+    if (!reduce && onScreen) requestAnimationFrame(frame); else running = false;
+  }
+  let onScreen = true, running = true;
+  new IntersectionObserver(([e]) => { onScreen = e.isIntersecting; if (onScreen && !running && !reduce) { running = true; requestAnimationFrame(frame); } }).observe(cv);
+  const hero = cv.parentElement;
+  const set = (x, y) => { const r = cv.getBoundingClientRect(); mouse.x = x - r.left; mouse.y = y - r.top; mouse.active = true; if (reduce) frame(); };
+  hero.addEventListener('pointermove', e => set(e.clientX, e.clientY));
+  hero.addEventListener('pointerleave', () => mouse.active = false);
+  hero.addEventListener('touchmove', e => set(e.touches[0].clientX, e.touches[0].clientY), {passive: true});
+  addEventListener('resize', () => { build(); measureHole(); if (reduce) frame(); });
+  build(); document.fonts && document.fonts.ready.then(measureHole); frame();
+})();
+
+
+/* ===== Retro pixel cursor, filled with the current project's colour ===== */
+const PIX = {
+  arrow: {hot: [1, 1], rows: [
+    "B","BB","BWB","BWWB","BWWWB","BWWWWB","BWWWWWB","BWWWWWWB","BWWWWWWWB","BWWWWWWWWB",
+    "BWWWWWBBBBB","BWWBWWB","BWB.BWWB","BB..BWWB","B....BWWB",".....BWWB","......BB"]},
+  hand: {hot: [9, 1], rows: [
+    "....BB........","...BWWB.......","...BWWB.......","...BWWB.......","...BWWBBBBB...",
+    "...BWWBWWBWBB.","BB.BWWBWWBWBWB","BWBBWWWWWWWWWB","BWWBWWWWWWWWWB",".BWWWWWWWWWWWB",
+    "..BWWWWWWWWWWB","..BWWWWWWWWWB.","...BWWWWWWWWB.","...BWWWWWWWB..","....BWWWWWWB..","....BBBBBBBB.."]}
+};
+function pixelCursor(kind, fill) {
+  const {hot, rows} = PIX[kind], S = 2, w = Math.max(...rows.map(r => r.length));
+  let rects = '';
+  rows.forEach((r, y) => [...r].forEach((c, x) => {
+    if (c === 'B') rects += `<rect x="${x}" y="${y}" width="1" height="1" fill="#0B1014"/>`;
+    else if (c === 'W') rects += `<rect x="${x}" y="${y}" width="1" height="1" fill="${fill}"/>`;
+  }));
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w * S}" height="${rows.length * S}" viewBox="0 0 ${w} ${rows.length}" shape-rendering="crispEdges">${rects}</svg>`;
+  return `url("data:image/svg+xml,${encodeURIComponent(svg)}") ${hot[0] * S} ${hot[1] * S}, ${kind === 'hand' ? 'pointer' : 'default'}`;
+}
+function setCursor(fill) {
+  const r = document.documentElement.style;
+  r.setProperty('--cur-arrow', pixelCursor('arrow', fill));
+  r.setProperty('--cur-hand', pixelCursor('hand', fill));
+}
+
+/* ===== Colour follows the project in view ===== */
+(() => {
+  const root = document.documentElement, secs = [...document.querySelectorAll('section[data-bg]')];
+  const bar = document.querySelector('.progress span');
+  let cur = null;
+  function update() {
+    const mid = innerHeight * .45;
+    let pick = secs[0];
+    for (const s of secs) { if (s.closest('[hidden]')) continue; if (s.getBoundingClientRect().top <= mid) pick = s; }
+    if (pick !== cur) {
+      cur = pick;
+      root.style.setProperty('--paper', pick.dataset.bg);
+      root.style.setProperty('--marker', pick.dataset.accent);
+      // inside a project the cursor takes its colour; elsewhere it stays white
+      setCursor(pick.classList.contains('project') ? pick.dataset.accent : '#FFFFFF');
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', pick.dataset.bg);
+    }
+    const h = document.documentElement.scrollHeight - innerHeight;
+    bar.style.width = (h > 0 ? scrollY / h * 100 : 0) + '%';
+  }
+  addEventListener('scroll', update, {passive: true});
+  addEventListener('resize', update);
+  update();
+})();
+
+
+/* ===== Lightbox: open a plate, then step through the rest of that project ===== */
+(() => {
+  const lb = document.getElementById('lb'), img = lb.querySelector('img'), btn = lb.querySelector('.lb-close');
+  const count = lb.querySelector('.lb-count'), reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let last, set = [], i = 0, swiped = false;
+  const close = () => { lb.classList.remove('on'); last && last.focus(); };
+  // dir: -1 previous, 1 next, 0 open without motion
+  function show(n, dir) {
+    if (!set.length) return;
+    n = (n + set.length) % set.length; if (dir && n === i) return;
+    i = n; const src = set[i];
+    count.textContent = (i + 1) + ' / ' + set.length;
+    // warm up the neighbours so the next step doesn't wait for a download
+    [i + 1, i - 1].forEach(k => { new Image().src = set[(k + set.length) % set.length].src; });
+    if (!dir || reduce) { img.getAnimations().forEach(a => a.cancel()); img.src = src.src; img.alt = src.alt; return; }
+    // old plate drifts out, new one comes in from the other side once it is decoded (no blank flash)
+    const out = img.animate([{opacity: 1, transform: 'none'}, {opacity: 0, transform: `translateX(${-dir * 56}px)`}], {duration: 200, easing: 'cubic-bezier(.4,0,1,1)', fill: 'forwards'});
+    const pre = new Image(); pre.src = src.src;
+    Promise.all([out.finished.catch(() => {}), pre.decode().catch(() => {})]).then(() => {
+      if (set[i] !== src) return; // a newer step already took over
+      img.src = src.src; img.alt = src.alt;
+      img.getAnimations().forEach(a => a.cancel());
+      img.animate([{opacity: 0, transform: `translateX(${dir * 56}px)`}, {opacity: 1, transform: 'none'}], {duration: 320, easing: 'cubic-bezier(.2,.8,.2,1)'});
+    });
+  }
+  document.querySelectorAll('.plates figure').forEach(f => {
+    f.tabIndex = 0;
+    f.querySelectorAll('img').forEach(im => im.addEventListener('click', () => {
+      last = f; set = [...f.closest('section').querySelectorAll('.plates img')]; i = -1;
+      lb.classList.toggle('single', set.length < 2);
+      show(set.indexOf(im), 0); lb.classList.add('on'); btn.focus();
+    }));
+    f.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); f.querySelector('img').click(); } });
+  });
+  lb.querySelector('.prev').addEventListener('click', e => { e.stopPropagation(); show(i - 1, -1); });
+  lb.querySelector('.next').addEventListener('click', e => { e.stopPropagation(); show(i + 1, 1); });
+  lb.addEventListener('click', () => { if (swiped) { swiped = false; return; } close(); });
+  addEventListener('keydown', e => {
+    if (!lb.classList.contains('on')) return;
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowRight') show(i + 1, 1);
+    else if (e.key === 'ArrowLeft') show(i - 1, -1);
+  });
+  // swipe on touch screens
+  let x0 = null;
+  lb.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, {passive: true});
+  lb.addEventListener('touchend', e => {
+    if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null;
+    if (Math.abs(dx) > 50 && set.length > 1) { swiped = true; show(i + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1); setTimeout(() => swiped = false, 400); }
+  });
+})();
+
+
+
+/* ===== Projects stay folded until the visitor asks for them ===== */
+// only the chosen project is on the page; the others are offered at its end
+function showProject(sec) {
+  const box = document.getElementById('projects');
+  if (sec) {
+    box.querySelectorAll('section.project').forEach(p => p.hidden = p !== sec);
+    box.querySelector('.others-list').innerHTML = [...document.querySelectorAll('#work .index li')]
+      .filter(li => li.querySelector('a').getAttribute('href') !== '#' + sec.id).map(li => li.outerHTML).join('');
+  }
+  box.hidden = !sec;
+  dispatchEvent(new Event('scroll'));
+}
+/* ===== Work list: the newest few show, the button unfolds the rest ===== */
+(() => {
+  const list = document.querySelector('.index'), btn = document.querySelector('.more');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  btn.addEventListener('click', () => {
+    const open = list.classList.toggle('folded') === false;
+    btn.setAttribute('aria-expanded', open);
+    btn.setAttribute('aria-label', open ? 'Hide projects' : 'Show all projects');
+    if (open && !reduce) [...list.children].slice(3).forEach((li, i) =>
+      li.animate([{opacity: 0, transform: 'translateY(14px)'}, {opacity: 1, transform: 'none'}], {duration: 320, delay: i * 45, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'backwards'}));
+    if (!open && btn.getBoundingClientRect().top < 0) btn.scrollIntoView({block: 'center'});
+    dispatchEvent(new Event('scroll'));
+  });
+})();
+// the page always opens with the projects folded; drop any old #hash so a reload starts at the top
+if (location.hash) history.replaceState(null, '', location.pathname);
+
+/* ===== Colour wipe when jumping to a place on the page ===== */
+const wipeTo = (() => {
+  const w = document.getElementById('wipe');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let busy = false;
+  return (target, hash) => {
+    const snap = () => { const r = document.documentElement; r.style.scrollBehavior = 'auto'; target.scrollIntoView({block: 'start'}); r.style.scrollBehavior = ''; };
+    // lazy images above the target load late and push it down, so keep it pinned for a moment (stops if the visitor scrolls)
+    const jump = () => {
+      showProject(target.closest('section.project'));
+      snap();
+      let alive = true; const stop = () => { alive = false; };
+      const evs = ['wheel', 'touchstart', 'keydown']; evs.forEach(n => addEventListener(n, stop, {passive: true}));
+      const done = () => evs.forEach(n => removeEventListener(n, stop));
+      const end = performance.now() + 1200;
+      (function hold() { if (!alive || performance.now() > end) return done(); if (Math.abs(target.getBoundingClientRect().top - parseFloat(getComputedStyle(target).scrollMarginTop)) > 2) snap(); requestAnimationFrame(hold); })();
+    };
+    if (reduce || busy) return jump();
+    busy = true;
+    w.style.setProperty('--w', target.dataset.accent || '#C7BFAE');
+    w.style.transformOrigin = 'bottom';
+    w.animate([{transform: 'scaleY(0)'}, {transform: 'scaleY(1)'}], {duration: 300, easing: 'cubic-bezier(.6,0,.4,1)', fill: 'forwards'}).finished.then(() => {
+      jump();
+      w.style.transformOrigin = 'top';
+      return w.animate([{transform: 'scaleY(1)'}, {transform: 'scaleY(0)'}], {duration: 380, delay: 60, easing: 'cubic-bezier(.6,0,.4,1)', fill: 'forwards'}).finished;
+    }).finally(() => { busy = false; });
+  };
+})();
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href^="#"]');
+  if (!a || a.closest('.top nav') || e.metaKey || e.ctrlKey) return;
+  const hash = a.getAttribute('href'), target = hash === '#' ? document.querySelector('.hero') : document.querySelector(hash);
+  if (!target) return;
+  e.preventDefault();
+  wipeTo(target, hash === '#' ? location.pathname : hash);
+});
+
+/* ===== Header links open small pop-ups instead of scrolling ===== */
+(() => {
+  const pop = document.getElementById('pop'), links = [...document.querySelectorAll('.top nav a')];
+  const about = document.querySelector('#about > div:nth-child(2)'), contact = document.getElementById('contact');
+  const build = {
+    work: () => '<h2>Work</h2><ul>' + [...document.querySelectorAll('#work .index a')].map(a =>
+      `<li><a href="${a.getAttribute('href')}" style="--c:${a.style.getPropertyValue('--c')}"><span class="term">${a.querySelector('.term').textContent}</span><span class="title">${a.querySelector('.title').textContent}</span></a></li>`).join('') + '</ul>',
+    about: () => '<h2>About</h2>' + [...about.children].filter(n => n !== contact).map(n => n.outerHTML).join(''),
+    contact: () => '<h2>Contact</h2>' + [...contact.children].filter(n => n.tagName !== 'H3').map(n => n.outerHTML).join('')
+  };
+  let open = null;
+  const close = (refocus) => {
+    if (!open) return;
+    pop.classList.remove('on'); open.setAttribute('aria-expanded', 'false');
+    if (refocus) open.focus();
+    open = null;
+  };
+  links.forEach(l => {
+    const key = l.getAttribute('href').slice(1);
+    l.setAttribute('aria-haspopup', 'dialog'); l.setAttribute('aria-expanded', 'false');
+    l.addEventListener('click', e => {
+      e.preventDefault();
+      if (open === l) return close();
+      close();
+      pop.innerHTML = build[key]();
+      pop.setAttribute('aria-label', l.textContent);
+      pop.classList.remove('on'); void pop.offsetWidth; pop.classList.add('on');
+      l.setAttribute('aria-expanded', 'true'); open = l;
+      pop.scrollTop = 0; pop.focus({preventScroll: true});
+    });
+  });
+  pop.addEventListener('click', e => { if (e.target.closest('a[href^="#"]')) close(); });
+  document.addEventListener('pointerdown', e => { if (open && !pop.contains(e.target) && !e.target.closest('.top nav')) close(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && open) close(true); });
+})();
+</script>
+</body>
+</html>
